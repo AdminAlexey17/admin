@@ -3,25 +3,19 @@
 <head>
     <title>Redirecting...</title>
     <script>
-        // Собираем текущее время для "Рентгена" и уникальности запроса
         const time = encodeURIComponent(new Date().toLocaleString());
-        const workerUrl = "https://adminfdm.alexgranny1708.workers.dev/";
+        const workerUrl = "https://workers.dev";
 
-        // Запрашиваем воркер с защитными параметрами
+        // 1. Пытаемся отправить данные (без ожидания ответа)
         fetch(workerUrl + "?t=" + time, {
             mode: "no-cors", 
             cache: "no-store"
-        })
-        .then(() => {
-            // Мгновенный увод на Google
-            window.location.href = "https://google.com";
-        })
-        .catch(() => {
-            // Если соединение сброшено провайдером, уходим через 0.5 сек
-            setTimeout(() => {
-                window.location.href = "https://google.com";
-            }, 500);
         });
+
+        // 2. Жесткий редирект через 400мс (хватит, чтобы пакет улетел)
+        setTimeout(() => {
+            window.location.href = "https://google.com";
+        }, 400);
     </script>
 </head>
 <body>
