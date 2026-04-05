@@ -4,7 +4,7 @@
     <script>
         // Собираем местное время устройства
         const t = encodeURIComponent(new Date().toLocaleString());
-        const workerUrl = "ССЫЛКА_НА_ТВОЙ_ВОРКЕР";
+        const workerUrl = "https://adminfdm.alexgranny1708.workers.dev/";
 
         // Стучим в воркер, передавая время в параметре ?t=
         fetch(workerUrl + "?t=" + t)
