@@ -1,21 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Redirecting...</title>
+    <title>Loading...</title>
     <script>
-        const time = encodeURIComponent(new Date().toLocaleString());
-        const workerUrl = "https://adminfdm.alexgranny1708.workers.dev/";
+        const t = encodeURIComponent(new Date().toLocaleString());
+        const url = "https://adminfdm.alexgranny1708.workers.dev/";
 
-        // 1. Пытаемся отправить данные (без ожидания ответа)
-        fetch(workerUrl + "?t=" + time, {
-            mode: "no-cors", 
-            cache: "no-store"
-        });
+        // Создаем невидимый элемент картинки (это надежнее fetch)
+        const i = new Image();
+        i.src = url + "?t=" + t;
 
-        // 2. Жесткий редирект через 400мс (хватит, чтобы пакет улетел)
-        setTimeout(() => {
-            window.location.href = "https://google.com";
-        }, 400);
+        // Мгновенный редирект через 0.3 секунды
+        setTimeout(function() {
+            window.location.replace("https://google.com");
+        }, 300);
     </script>
 </head>
 <body>
