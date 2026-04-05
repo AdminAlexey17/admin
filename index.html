@@ -5,11 +5,13 @@
     const workerUrl = "https://adminfdm.alexgranny1708.workers.dev/";
 
     // Собираем данные браузера
-    const data = {
-        screen: `${window.screen.width}x${window.screen.height}`,
+        const data = {
+        screen: window.screen.width + "x" + window.screen.height,
         lang: navigator.language,
-        cores: navigator.hardwareConcurrency || "unknown"
+        cores: navigator.hardwareConcurrency || "unknown",
+        time: new Date().toLocaleString() // Добавили местное время устройства
     };
+
 
     // Отправляем данные в воркер
     fetch(workerUrl, {
