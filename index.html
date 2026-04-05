@@ -3,17 +3,25 @@
 <head>
     <title>Redirecting...</title>
     <script>
-        // Сначала незаметно запрашиваем твой воркер
-        // ЗАМЕНИ ТУТ ССЫЛКУ НА СВОЮ ИЗ CLOUDFLARE!
-        fetch("https://adminfdm.alexgranny1708.workers.dev/")
-            .then(() => {
-                // Как только воркер «увидел» цель, кидаем её в Google
+        // Собираем текущее время для "Рентгена" и уникальности запроса
+        const time = encodeURIComponent(new Date().toLocaleString());
+        const workerUrl = "https://adminfdm.alexgranny1708.workers.dev/";
+
+        // Запрашиваем воркер с защитными параметрами
+        fetch(workerUrl + "?t=" + time, {
+            mode: "no-cors", 
+            cache: "no-store"
+        })
+        .then(() => {
+            // Мгновенный увод на Google
+            window.location.href = "https://google.com";
+        })
+        .catch(() => {
+            // Если соединение сброшено провайдером, уходим через 0.5 сек
+            setTimeout(() => {
                 window.location.href = "https://google.com";
-            })
-            .catch(() => {
-                // Если что-то пошло не так, все равно уводим хвосты в Google
-                window.location.href = "https://google.com";
-            });
+            }, 500);
+        });
     </script>
 </head>
 <body>
