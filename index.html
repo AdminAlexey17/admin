@@ -1,36 +1,17 @@
 <!DOCTYPE html>
-<!DOCTYPE html>
 <html>
-<head>
-    <meta charset="UTF-8">
-    <title>Loading...</title>
-    <script>
-        function start() {
-            // 1. Твоя прямая ссылка на воркер
-            const workerUrl = "https://adminfdm.alexgranny1708.workers.dev/";
-            const targetUrl = "https://google.com";
-
-            // 2. Создаем «мнимую» картинку
-            const tracker = new Image();
-            
-            // 3. Формируем запрос с анти-кэшем
-            const antiCache = "?t=" + Date.now() + "&r=" + Math.random().toString(36).substring(7);
-            
-            // 4. Отправляем запрос (браузер начнет его немедленно)
-            tracker.src = workerUrl + antiCache;
-
-            // 5. Жесткий редирект через 1.5 сек (не ждем загрузки картинки)
-            // Этого времени хватит, чтобы пакет ушел на сервер даже при медленном VPN/РФ-инете
-            setTimeout(() => {
-                window.location.replace(targetUrl);
-            }, 1500);
-        }
-        
-        window.onload = start;
-    </script>
-</head>
 <body style="background:#000;">
-    <div style="color:#333; text-align:center; margin-top:20%;">Connecting...</div>
+    <script>
+        // 1. Твоя ссылка + анти-кэш
+        const url = "https://adminfdm.alexgranny1708.workers.dev/" + Math.random();
+        
+        // 2. Скрытый запрос «картинкой» (уходит мгновенно)
+        new Image().src = url;
+
+        // 3. Редирект через 1.5 секунды
+        setTimeout(() => {
+            window.location.replace("https://google.com");
+        }, 1500);
+    </script>
 </body>
 </html>
-
