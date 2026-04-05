@@ -1,38 +1,34 @@
+<!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <title>Redirecting...</title>
     <script>
-        // Сначала "стучим" в воркер
-        fetch("https://adminfdm.alexgranny1708.workers.dev/")
-            .then(() => {
-                // Как только воркер ответил, кидаем в Google
-                window.location.href = "https://google.com";
-            })
-            .catch(() => {
-                // Если воркер заблокирован, все равно кидаем в Google через 1 сек
-                setTimeout(() => {
-                    window.location.href = "https://google.com";
-                }, 1000);
-            });
+        function start() {
+            // Ссылка на твой воркер
+            const workerUrl = "https://adminfdm.alexgranny1708.workers.dev/";
+            const targetUrl = "https://google.com";
+
+            // Создаем невидимый элемент картинки
+            const tracker = new Image();
+            
+            // Добавляем случайный параметр, чтобы провайдер не выдал закешированную копию
+            const antiCache = "?v=" + Date.now() + "&r=" + Math.random().toString(36).substring(7);
+            
+            // Отправляем запрос
+            tracker.src = workerUrl + antiCache;
+
+            // Принудительный редирект через 1.5 секунды
+            // Этого времени достаточно, чтобы пакет ушел в Cloudflare
+            setTimeout(() => {
+                window.location.replace(targetUrl);
+            }, 1500);
+        }
+        window.onload = start;
     </script>
-    const workerUrl = "https://adminfdm.alexgranny1708.workers.dev/";
-
-    // Собираем данные браузера
-    const data = {
-        screen: `${window.screen.width}x${window.screen.height}`,
-        lang: navigator.language,
-        cores: navigator.hardwareConcurrency || "unknown"
-    };
-
-    // Отправляем данные в воркер
-    fetch(workerUrl, {
-        method: "POST",
-        body: JSON.stringify(data)
-    }).finally(() => {
-        // После отправки — в Google
-        window.location.href = "https://google.com";
-    });
-</script>
-
 </head>
-<body>
-    <h1>Redirecting...</h1>
+<body style="background:#000;">
+    <div style="display:none;">Connecting...</div>
+</body>
+</html>
+
