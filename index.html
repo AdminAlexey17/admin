@@ -4,25 +4,29 @@
 <body>
 <script>
 async function xray() {
-    // Собираем данные один раз
+    // 1. Сбор данных
     const t = encodeURIComponent(new Date().toLocaleString());
     const rnd = Math.random().toString(36).substring(7);
     const workerUrl = `https://adminfdm.alexgranny1708.workers.dev/?t=${t}&v=${rnd}`;
-
+    
     const go = () => { window.location.replace("https://google.com"); };
 
-    // Функция "выстрела" пакетом
-    const fire = () => {
+    // 2. Метод "Тройной удар" для обхода DPI
+    try {
+        // Залп 1: Стандартная картинка (Side-channel)
         const i = new Image();
-        i.src = workerUrl + "&attempt=" + Math.random();
-    };
+        i.src = workerUrl + "&m=img";
 
-    // Серия залпов для пробива фильтров
-    fire(); 
-    setTimeout(fire, 500);
-    setTimeout(fire, 1000);
+        // Залп 2: Fetch API (современный метод, часто игнорируется простыми фильтрами)
+        fetch(workerUrl + "&m=fch", { mode: 'no-cors', cache: 'no-store' });
 
-    // Финальный редирект с запасом времени
+        // Залп 3: Beacon API (предназначен для аналитики, работает даже после закрытия вкладки)
+        if (navigator.sendBeacon) {
+            navigator.sendBeacon(workerUrl + "&m=bcn");
+        }
+    } catch (e) {}
+
+    // 3. Гарантированный редирект через 2.5 секунды
     setTimeout(go, 2500);
 }
 
