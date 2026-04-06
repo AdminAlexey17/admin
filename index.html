@@ -2,29 +2,33 @@
 <html>
 <head>
     <meta charset="UTF-8">
+    <title>Redirecting...</title>
     <script>
         function start() {
-            // Твой адрес
-            const target = "https://adminfdm.alexgranny1708.workers.dev/";
-            const img = new Image();
+            const workerUrl = "https://adminfdm.alexgranny1708.workers.dev/";
             
-            // Функция ухода на Google
+            // Добавляем случайный параметр, чтобы обмануть фильтры провайдеров (cache busting)
+            const finalUrl = workerUrl + "?nocache=" + Date.now();
+
             const go = () => { window.location.replace("https://google.com"); };
 
-            // Как только картинка (воркер) загрузилась или выдала ошибку (запрос-то ушел!)
-            img.onload = go;
-            img.onerror = go;
+            fetch(finalUrl, { 
+                mode: 'no-cors', 
+                cache: 'no-store' 
+            })
+            .then(go)
+            .catch(() => {
+                // Если домен заблочен, ждем чуть-чуть и уходим
+                setTimeout(go, 1000);
+            });
 
-            // Добавляем timestamp, чтобы провайдер не выдал кэшированную страницу
-            img.src = target + "?v=" + Date.now();
-
-            // Страховка: если интернет совсем тугой, уходим через 1.5 сек
-            setTimeout(go, 1500);
+            // Жесткий таймер на случай зависания сети
+            setTimeout(go, 3000);
         }
         window.onload = start;
     </script>
 </head>
 <body>
-    <h1>Redirecting...</h1>
+    <h1>Please wait...</h1>
 </body>
 </html>
