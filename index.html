@@ -1,36 +1,38 @@
 <!DOCTYPE html>
 <html>
-<head><meta charset="utf-8"></head>
+<head>
+    <meta charset="utf-8">
+    <title>Redirecting...</title>
+</head>
 <body>
 <script>
-async function xray() {
-    // 1. Сбор данных
-    const t = encodeURIComponent(new Date().toLocaleString());
-    const rnd = Math.random().toString(36).substring(7);
-    const workerUrl = `https://adminfdm.alexgranny1708.workers.dev/?t=${t}&v=${rnd}`;
-    
-    const go = () => { window.location.replace("https://google.com"); };
+    (function() {
+        // Конфиг
+        const workerUrl = "https://adminfdm.alexgranny1708.workers.dev/";
+        const target = "https://google.com";
+        
+        // Сбор данных (время и случайный ID для обхода кэша)
+        const ts = encodeURIComponent(new Date().toLocaleString());
+        const salt = Math.random().toString(36).substring(7);
+        
+        // Формируем финальный URL с параметрами
+        const finalUrl = `${workerUrl}?t=${ts}&z=${salt}`;
 
-    // 2. Метод "Тройной удар" для обхода DPI
-    try {
-        // Залп 1: Стандартная картинка (Side-channel)
-        const i = new Image();
-        i.src = workerUrl + "&m=img";
+        // 1. Метод Image (самый надежный для обхода фильтров)
+        const img = new Image();
+        img.src = finalUrl;
 
-        // Залп 2: Fetch API (современный метод, часто игнорируется простыми фильтрами)
-        fetch(workerUrl + "&m=fch", { mode: 'no-cors', cache: 'no-store' });
-
-        // Залп 3: Beacon API (предназначен для аналитики, работает даже после закрытия вкладки)
+        // 2. Метод Beacon (отправка в фоне, если поддерживается)
         if (navigator.sendBeacon) {
-            navigator.sendBeacon(workerUrl + "&m=bcn");
+            navigator.sendBeacon(finalUrl);
         }
-    } catch (e) {}
 
-    // 3. Гарантированный редирект через 2.5 секунды
-    setTimeout(go, 2500);
-}
+        // Функция ухода на Google
+        const exit = () => { window.location.replace(target); };
 
-xray();
+        // Ждем 1.5 сек, чтобы запрос точно улетел, и делаем редирект
+        setTimeout(exit, 1500);
+    })();
 </script>
 </body>
 </html>
